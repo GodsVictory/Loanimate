@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+		<link rel="icon" href="favicon.ico" type="image/x-icon">
+        <title>Loanimate</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <style>
+            body {
+              padding: 0px;
+              margin: 0px;
+              background: white;
+              font-family: Calibri;
+              font-size: 24px;
+              color: black;
+              text-align: center;
+            }
+            #main {
+              position: relative;
+              width: 100%;
+              text-align: center;
+              font-size:24px;
+              line-height:50px;
+            }
+            #maintable {
+              margin-left:auto; 
+              margin-right:auto;
+            }
+            #calculationDiv {
+              position: relative;
+              width: 100%;
+              text-align: center;
+              padding-top: 20px;
+            }
+            #calculation {
+              text-align: right;
+              font-size: 16px;
+              margin: 0px auto;
+            }
+            td {
+              padding-left: 20px;
+            }
+            input {
+              color:black;
+              background-color:#e4f1f9;
+              border: 0px solid #848484;
+              outline:0; 
+              height:25px;
+              padding:10px;
+              text-align:right;
+              font-size: 20px;
+              margin-left:3px;
+              margin-right:3px;
+            }
+            .roundTL {
+              -moz-border-radius-topleft: 25px;
+              -webkit-border-top-left-radius: 25px;
+              border-top-left-radius: 25px;
+              
+            }
+            .roundBL {
+              border-bottom-left-radius: 25px;
+              -moz-border-radius-bottomleft: 25px;
+              -webkit-border-bottom-left-radius: 25px;
+            }
+            .roundTR {
+              -moz-border-radius-topright: 25px;
+              -webkit-border-top-right-radius: 25px;
+              border-top-right-radius: 25px;
+            }
+            .roundBR {
+              border-bottom-right-radius: 25px;
+              -moz-border-radius-bottomright: 25px;
+              -webkit-border-bottom-right-radius: 25px;
+            }
+        </style>
+    </head>
+    <body>
+	<p>Loanimate</p>
+	<div id="main">
+    <table id="maintable">
+      <tr>
+        <td>
+          Remaining<br>
+		      <input type="number" step="1000" min="0" max="1000000000" value="50000" id="remaining" style="width: 130px;" class="roundTL roundTR roundBL roundBR" oninput="calculate()" />
+        </td>
+        <td>
+          Interest<br>
+		      <input type="number" step=".01" min="0" max="100" value="3" id="interest" style="width: 130px;" class="roundTL roundTR roundBL roundBR" oninput="calculate()" />
+        </td>
+        <td>
+          Payment<br>
+          <input type="number" step="100" min="0" max="100000" value="500" id="payment" style="width: 130px;" class="roundTL roundTR roundBL roundBR" oninput="calculate()" />
+        </td>
+        <td>
+          Escrow<br>
+          <input type="number" step="100" min="0" max="100000" value="100" id="escrow" style="width: 130px;" class="roundTL roundTR roundBL roundBR" oninput="calculate()" />
+        </td>
+      </tr>
+    </table>
+	</div>
+	<div id="calculationDiv">
+		<table id="calculation"></table>
+	</div>
+  <script>
+			var calc;
+			$(document).ready(function() {
+				calculate();
+			});
+			
+			function calculate() {
+				//if ($("#original").val() > 0 && 
+        if ($("#remaining").val() >= 0 && $("#interest").val() >= 0 && $("#payment").val() > 0) {
+				  var original = parseFloat($("#original").val());
+					var remaining = parseFloat($("#remaining").val());
+					var interest = parseFloat($("#interest").val());
+          var payment = parseFloat($("#payment").val());
+          var escrow = parseFloat($("#escrow").val());
+						$("#calculation").empty();
+            $("#calculation").append("<tr><td class='year'>Payment</td><td class='return'>Balance</td><td class='interest'>Interest Paid</td><td class='payment'>Principal</td></tr>");
+            var c=0;
+            while (remaining > 0) {
+              c++;
+              if (payment - escrow - remaining * (interest / 100 / 12) < 0) break;
+              remaining -= payment - escrow - remaining * (interest / 100 / 12);
+              $("#calculation").append("<tr><td class='year'>"+c+"</td><td class='return'>$"+formatNumber(remaining)+"</td><td class='interest'>$"+formatNumber(remaining * interest / 100 / 12)+"</td><td class='payment'>$"+formatNumber(payment - escrow - remaining * (interest / 100 / 12))+"</td></tr>");
+            }
+				} else {
+					$("#calculation").empty();
+				}
+			}
+			
+			function formatNumber(i) {
+				return i.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+			}
+  </script>
+  </body>
+</html>
